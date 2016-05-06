@@ -50,7 +50,7 @@ def limit_handled_user_batch(user_ids, api):
       logging_file.write("Failed to run the command on that user, Skipping... \n")
 
 
-logging_file = ""
+logging_file = None
   
 
 # please fill in your credentials below
