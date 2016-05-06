@@ -71,7 +71,7 @@ def main():
     print 'expected: twitter_crawler.py --User=berniesanders --Degree=2'
     sys.exit(2)
 
-  if user = "":
+  if user == "":
     print "No user specified"
     sys.exit(1)
 
