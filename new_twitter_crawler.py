@@ -20,10 +20,10 @@ def limit_handled(cursor):
       try:
         yield cursor.next()
       except tweepy.RateLimitError:
-        logging_file.write('Waiting on cursor request \n')
+        sys.stderr.write('Waiting on cursor request \n')
         time.sleep(15*62)
       except tweepy.TweepError:
-          logging_file.write("Failed to run the command on that user, Skipping... \n")
+          sys.stderr.write("Failed to run the command on that user, Skipping... \n")
 
 
 def limit_handled_user(user_name, api):
@@ -32,10 +32,10 @@ def limit_handled_user(user_name, api):
       user = api.get_user(user_name)
       return user
     except tweepy.RateLimitError:
-      logging_file.write('Waiting on user request for ' + user_name + '\n')
+      sys.stderr.write('Waiting on user request for ' + user_name + '\n')
       time.sleep(15*62)
     except tweepy.TweepError:
-      logging_file.write("Failed to run the command on that user, Skipping... \n")
+      sys.stderr.write("Failed to run the command on that user, Skipping... \n")
 
 
 def limit_handled_user_batch(user_ids, api):
@@ -44,15 +44,11 @@ def limit_handled_user_batch(user_ids, api):
       users = api.lookup_users(user_ids)
       return users
     except tweepy.RateLimitError:
-      logging_file.write('Waiting on user request for batch \n')
+      sys.stderr.write('Waiting on user request for batch \n')
       time.sleep(15*62)
     except tweepy.TweepError:
-      logging_file.write("Failed to run the command on that user, Skipping... \n")
-
-
-logging_file = ""
+      sys.stderr.write("Failed to run the command on that user, Skipping... \n")
   
-
 # please fill in your credentials below
 def main():
   try:
@@ -71,12 +67,9 @@ def main():
     print 'expected: twitter_crawler.py --User=berniesanders --Degree=2'
     sys.exit(2)
 
-  if user = "":
+  if user == "":
     print "No user specified"
     sys.exit(1)
-
-  logging_file = open(str(user) + ".log", 'w')
-  logging_file.truncate()
 
   cfg = { 
     "consumer_key"        : "nWpbEeehwRkGCfCEMZOAMKuwY",
@@ -91,10 +84,10 @@ def main():
 
   user = limit_handled_user(user_name, api)
 
-  logging_file.write('Size of user object: ' + str(sys.getsizeof(user)) + '\n')
+  sys.stderr.write('Size of user object: ' + str(sys.getsizeof(user)) + '\n')
 
-  logging_file.write(user.screen_name)
-  logging_file.write('Number of followers: ' + str(user.followers_count) + '\n')
+  sys.stderr.write(user.screen_name)
+  sys.stderr.write('Number of followers: ' + str(user.followers_count) + '\n')
 
   createNetwork(user, degree, api)
 
@@ -120,13 +113,13 @@ def createNetwork(user, degree, api):
 
   #For each degree of the network
   for i in range(0, degree):
-    logging_file.write('Adding layer ' + str((i + 1)) + '\n')
+    sys.stderr.write('Adding layer ' + str((i + 1)) + '\n')
     network, nextLayerOfFollowers = getLayer(network, nextLayerOfFollowers, api)
-    logging_file.write('Layer added less following. Pretty printing layer: \n')
+    sys.stderr.write('Layer added less following. Pretty printing layer: \n')
     prettyPrintNetwork(network)
-    logging_file.write('----- \n')
+    sys.stderr.write('----- \n')
 
-    logging_file.write("Network created less following. Adding following. \n")
+    sys.stderr.write("Network created less following. Adding following. \n")
 
   # Iterate over user_name, get following and add
   for currentUserScreenName , setOfFollowers in network.items():
@@ -178,7 +171,7 @@ def getLayer(network, layerOfUsers, api):
 
     network[currentUser.screen_name] = set()
 
-    logging_file.write('Grabbing followers for user ' + currentUser.screen_name + '\n')
+    sys.stderr.write('Grabbing followers for user ' + currentUser.screen_name + '\n')
 
     currentUsersFollowers = addFollowersToSet(currentUser, api)
 
