@@ -52,16 +52,22 @@ def limit_handled_user_batch(user_ids, api):
 # please fill in your credentials below
 def main():
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'i', ['User=', 'Degree='])
+    opts, args = getopt.getopt(sys.argv[1:], 'i', ['User=', 'Degree=', 'Pickle=', 'Text='])
 
     user = ""
     degree = ""
+    outputToPickleFile = True
+    outputToStandardOut = True
 
     for o, a in opts:
       if o == '--User':
-        user = a
+        user = str(a)
       if o == '--Degree':
         degree = int(a)
+      if o == '--Pickle':
+        outputToPickleFile = str(a) == 'true'
+      if o == '--Text':
+        outputToStandardOut = str(a) == 'true'
 
   except getopt.GetoptError:
     print 'expected: twitter_crawler.py --User=berniesanders --Degree=2'
@@ -136,10 +142,12 @@ def createNetwork(user, degree, api):
         network = getFollowingBatch(currentUserScreenName, currentBatch, network, api)
 
   network = getFollowingBatch(currentUserScreenName, currentBatch, network, api)
-
-  prettyPrintNetwork(network)
-
-  pickle.dump(network, open(user.screen_name + ".pickle", "wb"))
+    
+  if outputToStandardOut:
+    prettyPrintNetwork(network)
+    
+  if outputToPickleFile:
+    pickle.dump(network, open(user.screen_name + ".pickle", "wb"))
 
 
 # get a batch of users that the given user is following
