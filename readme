@@ -1,17 +1,15 @@
 #Twitter Network
 Code for generating an nth degree network of followers / following from twitter.
 
-Usage: python -W ignore new_twitter_crawler.py --User=DjPauli_G --Degree=2 --Pickle=true --Text=true -- >DjPauli_G.out 2>DjPauli_G.progress
-
- python -W ignore new_twitter_crawler.py --User=DjPauli_G --Degree=2 --Pickle=xxxx.pickle --Text=xxxx.out 2>DjPauli_G.progress
+Usage: python -W ignore new_twitter_crawler.py --User=DjPauli_G --Depth=2 --Pickle=xxxx.pickle --Text=xxxx.out 2>DjPauli_G.progress
 
 
 -W ignore: Ignore python SSL warnings generated from tweepy API
 --User: the root node
---Degree: Degree of following
+--Depth: Depth of following network
 --Pickle: Whether or not to save the final result as a pickled python adjacency list
 --Text: Whether or not to output the final result to stanard output in the following form:
-2>file.progress: Redirect standard output to file.progress for tracking progress
+2>file.progress: Redirect standard errpr to file.progress for tracking progress
 
 
 

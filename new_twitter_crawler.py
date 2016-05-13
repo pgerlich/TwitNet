@@ -52,25 +52,25 @@ def limit_handled_user_batch(user_ids, api):
 # please fill in your credentials below
 def main():
   try:
-    opts, args = getopt.getopt(sys.argv[1:], 'i', ['User=', 'Degree=', 'Pickle=', 'Text='])
+    opts, args = getopt.getopt(sys.argv[1:], 'i', ['User=', 'Depth=', 'Pickle=', 'Text='])
 
     user = ""
-    degree = ""
-    outputToPickleFile = True
-    outputToStandardOut = True
+    depth = ""
+    pickleFileOutput = ""
+    textOutput = ""
 
     for o, a in opts:
       if o == '--User':
         user = str(a)
-      if o == '--Degree':
-        degree = int(a)
+      if o == '--Depth':
+        depth = int(a)
       if o == '--Pickle':
-        outputToPickleFile = str(a) == 'true'
+        pickleFileOutput = str(a)
       if o == '--Text':
-        outputToStandardOut = str(a) == 'true'
+        textOutput = str(a)
 
   except getopt.GetoptError:
-    print 'expected: twitter_crawler.py --User=berniesanders --Degree=2'
+    print 'expected: twitter_crawler.py --User=berniesanders --Depth=2'
     sys.exit(2)
 
   if user == "":
@@ -95,7 +95,7 @@ def main():
   sys.stderr.write(user.screen_name)
   sys.stderr.write('Number of followers: ' + str(user.followers_count) + '\n')
 
-  createNetwork(user, degree, api)
+  createNetwork(user, depth, api, pickleFileOutput, textOutput)
 
 def getUsernameListAsString(userList):
     listString = ""
@@ -106,23 +106,23 @@ def getUsernameListAsString(userList):
     return listString[2:]
 
 # Pretty print the network as user : list
-def prettyPrintNetwork(network):
+def prettyPrintNetwork(network, textOutputFile):
+  out = open(textOutputFile, 'w')
   for screen_name, followers in network.items():
-    print screen_name , ':' , getUsernameListAsString(followers)
+    out.write(screen_name , ':' , getUsernameListAsString(followers))
 
-# Create a degreeth network for the given user
-def createNetwork(user, degree, api):
+# Create an n depth network for the given user
+def createNetwork(user, depth, api, pickleFileOutput, textOutput):
   network = {}
 
   nextLayerOfFollowers = set()
   nextLayerOfFollowers.add(user)
 
   #For each degree of the network
-  for i in range(0, degree):
+  for i in range(0, depth):
     sys.stderr.write('Adding layer ' + str((i + 1)) + '\n')
     network, nextLayerOfFollowers = getLayer(network, nextLayerOfFollowers, api)
-    sys.stderr.write('Layer added less following. Pretty printing layer: \n')
-    prettyPrintNetwork(network)
+    sys.stderr.write('Layer added less following. \n')
     sys.stderr.write('----- \n')
 
     sys.stderr.write("Network created less following. Adding following. \n")
@@ -143,11 +143,11 @@ def createNetwork(user, degree, api):
 
   network = getFollowingBatch(currentUserScreenName, currentBatch, network, api)
     
-  if outputToStandardOut:
-    prettyPrintNetwork(network)
+  if textOutput:
+    prettyPrintNetwork(network, textOutput)
     
-  if outputToPickleFile:
-    pickle.dump(network, open(user.screen_name + ".pickle", "wb"))
+  if pickleFileOutput:
+    pickle.dump(network, open(pickleFileOutput + ".pickle", "wb"))
 
 
 # get a batch of users that the given user is following
